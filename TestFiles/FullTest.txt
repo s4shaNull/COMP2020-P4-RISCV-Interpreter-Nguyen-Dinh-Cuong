@@ -1,0 +1,211 @@
+#Testing strategy:
+#1) ALU test
+#- add
+#- addi
+#edgeCases
+#Overfllow when adding
+addi x2, x0, 12
+lui x1, 0x0ffff
+sra x3, x1, x2
+lui x4, 0x7fff0
+add x5, x4, x3 #Expected value of x5: 0x7fffffff
+addi x6, x0, 1
+add x7, x6, x5 #Expected value of x7: 0x80000000
+
+#- sub
+#edgeCases
+#Overflow when subtracting
+add x8, x7, x0 
+add x8, x8, x8 #Expected value of x8: 0x00000000
+
+#LogicOperators do not have edge cases, so having some random test cases is 
+#good enough
+#- and(i)
+and x9, x4, x5 #Expected value of x9: 0x7fff0000
+andi x10, x5, 0x0f0 #Expected value of x10: 0x000000f0
+
+#- or(i)
+or x11, x4, x5 #Expected value of x11: 0x7fffffff
+ori x12, x4, 0x0f0 #Expected value of x12:0x7fff00f0
+
+#- xor(i)
+xor x13, x4, x5 #Expected value of x13: 0x0000ffff
+xori x14, x4, 0xff0 #Expected value of x14: 0x8000fff0
+
+
+#For Shift test, there are severals edge cases
+#Shift Left
+#edgeCases
+#Value become 0 or -2147483648 after shifting 31 bits
+addi x15, x0, 31
+sll x16, x6, x15 #Expected value of x16: -2147483648
+sll x17, x7, x6 #Expected value of x15: 0x00000000
+sll x18, x14, x6 #Expected value of x16: 0x0001ffe0
+
+#- shift right arithmetic
+#edgeCases
+#Value become 0 or -1 after shifting equal 31 bits
+sra x19, x14, x15 #Expected value of x18: 0xffffffff
+sra x20, x12, x15 #Expected value of x20: 0x00000000
+
+#LUI
+lui x21, 0xDEADC
+addi x21, x21, 0xEEF #Expected value of x21: 0xdeadbeef
+
+#2) Compare test
+#CompareOperator
+slt x22, x19, x20 #Expected value of x22: 0x00000001
+slt x23, x19, x19 #Expected value of x23: 0x00000000
+slt x24, x20, x19 #Expected value of x24: 0x00000000
+
+#3) Store/Load test
+#Store Operator
+#Use store byte operator to store byte at byte 1, 2, byte 3, and 4
+sb x21, 0(x0) 
+#Expected value of Memory at Address 0x00000: 0x000000ef
+sb x21, 5(x0) 
+#Expected value of Memory at Address 0x00001: 0x0000ef00
+sb x21, 10(x0)
+
+#Expected value of Memory at Address 0x00002: 0x00ef0000
+sb x21, 15(x0)
+#Expected value of Memory at Address 0x0003: 0xef000000
+
+#Use store word operator to store word
+sw x21, 16(x0)
+#Expected value of Memory at Address 0x0004: 0xdeadbeef
+
+
+#Load Operator
+#Use Load byte to load byte at byte 1, byte 2, byte 3, and byte 4
+lb x25, 1(x0)
+lb x26, 5(x0)
+lb x27, 10(x0)
+lb x28, 15(x0)
+#Expected value of x25, x26, x27 and x28: 0xffffffef
+
+#Use Load word
+lw x29, 16(x0)
+#Expected value of x29: 0xdeadbeef
+
+#Checkpoint Register:
+#Register Expected Results
+## expect[0] = 0x00000000
+## expect[1] = 0x0ffff000
+## expect[2] = 0x0000000c
+## expect[3] = 0x0000ffff
+## expect[4] = 0x7fff0000
+## expect[5] = 0x7fffffff
+## expect[6] = 0x00000001
+## expect[7] = 0x80000000
+## expect[8] = 0x00000000
+## expect[9] = 0x7fff0000
+## expect[10] = 0x000000f0
+## expect[11] = 0x7fffffff
+## expect[12] = 0x7fff00f0
+## expect[13] = 0x0000ffff
+## expect[14] = 0x8000fff0
+## expect[15] = 0x0000001f
+## expect[16] = 0x80000000
+## expect[17] = 0x00000000
+## expect[18] = 0x0001ffe0
+## expect[19] = 0xffffffff
+## expect[20] = 0x00000000
+## expect[21] = 0xdeadbeef
+## expect[22] = 0x00000001
+## expect[23] = 0x00000000
+## expect[24] = 0x00000000
+## expect[25] = 0x00000000
+## expect[26] = 0xffffffef
+## expect[27] = 0xffffffef
+## expect[28] = 0xffffffef
+## expect[29] = 0xdeadbeef
+## expect[30] = 0x00000000
+## expect[31] = 0x00000000
+
+#Checkpoint RAM memory
+#M[0x00000] = 0x000000ef 
+#M[0x00001] = 0x0000ef00 
+#M[0x00002[ = 0x00ef0000 
+#M[0x00003] = 0xef000000 
+#M[0x00004] = deadbeef
+
+#4) Random test cases (Please reset the logisim circuit so that all the data is wiped)
+
+#Add/Addi/Sub
+addi x1, x0, 0x958
+addi x2, x0, 0x753
+add x3, x2, x1
+sub x4, x2, x1
+
+#Logical
+and x5, x1, x2
+andi x6, x1, 0x0f0
+or x7, x1, x2
+ori x8, x3, 0xcf0
+xor x9, x1, x3
+xori x10, x2, 0xdef
+
+#Shifting Operators
+addi x11, x0, 0x0ff
+addi x12, x0, 25
+sll x13, x11, x12
+sll x14, x12, x12
+addi x12, x0, 23
+sra x15, x13, x12
+
+#LUI Operators
+lui x16, 0x23233
+addi x16, x16, 0x932
+lui x17, 0x9238
+addi x17, x17, 0x409
+
+#Compare Operators
+slt x18, x2, x3
+slt x19, x1, x2
+
+#Store/Load Operators
+sb x17, 2(x0)
+sw x15, 4(x0)
+lb x20, 6(x0)
+lw x21, 4(x0)
+
+#Register Expected Results
+## expect[0] = 0x00000000
+## expect[1]  0xfffff958
+## expect[2] = 0x00000753
+## expect[3] = 0x000000ab
+## expect[4] = 0x00000dfb
+## expect[5] = 0x00000150
+## expect[6] = 0x00000050
+## expect[7] = 0xffffff5b
+## expect[8] = 0xfffffcfb
+## expect[9] = 0xfffff9f3
+## expect[10] = 0xfffffabc
+## expect[11] = 0x000000ff
+## expect[12] = 0x00000017
+## expect[13] = 0xfe000000
+## expect[14] = 0x32000000
+## expect[15] = 0xfffffffc
+## expect[16] = 0x23232932
+## expect[17] = 0x09238409
+## expect[18] = 0x00000000
+## expect[19] = 0x00000001
+## expect[20] = 0xffffffff
+## expect[21] = 0xfffffffc
+## expect[22] = 0x00000000
+## expect[23] = 0x00000000
+## expect[24] = 0x00000000
+## expect[25] = 0x00000000
+## expect[26] = 0x00000000
+## expect[27] = 0x00000000
+## expect[28] = 0x00000000
+## expect[29] = 0x00000000
+## expect[30] = 0x00000000
+## expect[31] = 0x00000000
+
+#Checkpoint memory RAM
+#M[0x00000] = 0x00090000 
+#M[0x00001] = 0xfffffffc
+
+
