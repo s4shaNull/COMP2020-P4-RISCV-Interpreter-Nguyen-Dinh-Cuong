@@ -64,7 +64,6 @@ int reg_1;
 int reg_2_imm;
 int offset;
 int temp;
-int temp_2;
 int des_mem;
 int des_reg;
 int value_reg_1;
@@ -314,10 +313,10 @@ void step(char *instruction)
 
         if (strcmp(op, "sw") == 0)
         {
-            ht_add(table, des_mem + offset + 3, ((registers->r[des_reg] >> 24) & 0x000000ff));
-            ht_add(table, des_mem + offset + 2, ((registers->r[des_reg] >> 16) & 0x000000ff));
-            ht_add(table, des_mem + offset + 1, ((registers->r[des_reg] >> 8) & 0x000000ff));
-            ht_add(table, des_mem + offset, ((registers->r[des_reg]) & 0x000000ff));
+            for (int i = 3; i >=0; i--)
+            {
+                ht_add(table, des_mem + offset + i, ((registers)->r[des_reg] >> 8*i) & 0x000000ff);
+            }
         }
 
         if (strcmp(op, "sb") == 0)
@@ -333,7 +332,6 @@ void step(char *instruction)
         {
             return;
         }
-
         temp_reg_2 = strsep(&instruction, " ");
         reg_2_imm = get_decimal(temp_reg_2);
         registers->r[des_reg] = reg_2_imm << 12;
