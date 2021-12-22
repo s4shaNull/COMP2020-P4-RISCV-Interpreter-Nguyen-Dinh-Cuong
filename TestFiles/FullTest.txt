@@ -4,10 +4,10 @@
 #- addi
 #edgeCases
 #Overfllow when adding
-addi x2, x0, 12
-lui x1, 0x0ffff
-sra x3, x1, x2
-lui x4, 0x7fff0
+addi     x2  ,    x0   , 12
+lui x1   , 0x0ffff        
+sra x3, x1  ,    x2
+lui     x4   ,         0x7fff0           
 add x5, x4, x3 #Expected value of x5: 0x7fffffff
 addi x6, x0, 1
 add x7, x6, x5 #Expected value of x7: 0x80000000
@@ -78,10 +78,10 @@ sw x21, 16(x0)
 
 #Load Operator
 #Use Load byte to load byte at byte 1, byte 2, byte 3, and byte 4
-lb x25, 1(x0)
+lb x25,   1  (  x0)
 lb x26, 5(x0)
-lb x27, 10(x0)
-lb x28, 15(x0)
+lb x27  , 10  (x0)
+lb x28  , 15  (  x0)
 #Expected value of x25, x26, x27 and x28: 0xffffffef
 
 #Use Load word
@@ -165,14 +165,14 @@ slt x18, x2, x3
 slt x19, x1, x2
 
 #Store/Load Operators
-sb x17, 2(x0)
+sb x17,    2(x0  )
 sw x15, 4(x0)
 lb x20, 6(x0)
 lw x21, 4(x0)
 
 #Register Expected Results
 ## expect[0] = 0x00000000
-## expect[1]  0xfffff958
+## expect[1] 0xfffff958
 ## expect[2] = 0x00000753
 ## expect[3] = 0x000000ab
 ## expect[4] = 0x00000dfb
@@ -206,6 +206,4 @@ lw x21, 4(x0)
 
 #Checkpoint memory RAM
 #M[0x00000] = 0x00090000 
-#M[0x00001] = 0xfffffffc
-
-
+#M[0x00001] = 0xfffffffc 

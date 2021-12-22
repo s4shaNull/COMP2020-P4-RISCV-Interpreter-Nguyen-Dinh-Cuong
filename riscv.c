@@ -123,14 +123,21 @@ char *trim(char* ins)
     return ins;
 }
 
-int sign_extend_i(int number) {
+int standardize_i (int number)
+{
+    return number % 0x1000;
+}
+
+int sign_extend_i(int number) 
+{
     if ((number & 0x00000800) != 0) {
             number = number | 0xfffff000;
     }
 	  return number;
 }
 
-int sign_extend_lb(int number) {
+int sign_extend_lb(int number) 
+{
 	  if ((number & 0x00000080) != 0)
     {
 		    number = number | 0xffffff00;
@@ -234,7 +241,7 @@ void step(char *instruction)
         }
 
         if (op_type == 1) {
-
+            reg_2_imm = standardize_i(reg_2_imm);
 			      reg_2_imm = sign_extend_i(reg_2_imm);
 
 			      if (strcmp(op, "addi") == 0) 
@@ -257,7 +264,7 @@ void step(char *instruction)
                 registers->r[des_reg] = value_reg_1 ^ reg_2_imm;
             }
 
-			      if (strcmp("slti", op) == 0)
+			      if (strcmp(op, "slti") == 0)
             {
                 if (value_reg_1 < reg_2_imm)
                 {
